@@ -1,13 +1,13 @@
 import random
 import arcade
 
-
+SPRITE_SCALING_PLATFORM = 0.25
 SPRITE_SCALING_PLAYER = 0.25
-PLAYER_JUMP_SPEED = 20
-GRAVITY = 1
-SCREEN_WIDTH = 650
-SCREEN_HEIGHT = 650
-PLAYER_MOVEMENT_SPEED = 15
+PLAYER_JUMP_SPEED = 9
+GRAVITY = 0.5
+SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 640
+PLAYER_MOVEMENT_SPEED = 5
 
 class MyGame(arcade.Window):
 
@@ -15,10 +15,9 @@ class MyGame(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Sprite Example")
         
         self.player_list = None
-        
-
+        self.physics_engine = None
         self.player_sprite = None
-        self.score = 0
+        self.wall_list = None
 
         self.set_mouse_visible(True)
 
@@ -29,11 +28,14 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
 
-        self.score = 0
+        wall = arcade.Sprite("New Piskel (2).png", SPRITE_SCALING_PLATFORM)
+        wall.center_x = 300
+        wall.center_y = 200
+        self.wall_list.append(wall)
 
         self.player_sprite = arcade.Sprite("spoonful.png", SPRITE_SCALING_PLAYER)
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
+        self.player_sprite.center_x = SCREEN_WIDTH/2
+        self.player_sprite.center_y = SCREEN_HEIGHT/2
         self.player_list.append(self.player_sprite)
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
@@ -46,9 +48,13 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         self.player_list.draw()
+        self.wall_list.draw()
     
+
+
     def update(self, delta_time):
 
+        self.physics_engine.update()
         self.player_sprite.update()
 
         if self.player_sprite.center_x < SPRITE_SCALING_PLAYER:
@@ -63,11 +69,10 @@ class MyGame(arcade.Window):
         if self.player_sprite.center_y > SCREEN_HEIGHT - SPRITE_SCALING_PLAYER:
             self.player_sprite.center_y = SCREEN_HEIGHT - SPRITE_SCALING_PLAYER
 
-        self.physics_engine.update()
+
 
 
     def on_key_press(self, symbol, modifiers):
-
         if symbol == arcade.key.LEFT:
             self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
         elif symbol == arcade.key.RIGHT:
@@ -85,8 +90,6 @@ class MyGame(arcade.Window):
         elif symbol == arcade.key.RIGHT:
             self.player_sprite.change_x = 0
         elif symbol == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
-        elif symbol == arcade.key.UP:
             self.player_sprite.change_y = 0
 
 
