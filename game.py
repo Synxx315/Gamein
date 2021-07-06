@@ -95,7 +95,7 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = SCREEN_HEIGHT/2
         self.player_list.append(self.player_sprite)
     
-        enemy = Enemy(200, 300)
+        enemy = Enemy(125, 300)
         self.enemy_list.append(enemy)
 
         self.background = arcade.load_texture("Background.png")
@@ -139,11 +139,14 @@ class MyGame(arcade.Window):
         self.player_sprite.update_animation(delta_time)
 
         enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.enemy_list)
-        if enemy_hit_list:
-            # figgure oput if player has jumped on enemy 
-            if self.player_sprite.center_y + SPRITE_SCALING_PLAYER/2 >= self.enemy_sprite.center_y + SPRITE_SCALING_ENEMY/2
-                
-
+        for enemy in enemy_hit_list:
+            if enemy_hit_list:
+                # figgure oput if player has jumped on enemy 
+                if self.player_sprite.center_y - self.player_sprite.height /2 >= enemy.center_y + enemy.height/2 - 10:
+                    enemy.kill()
+                    self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                else:
+                    self.setup()
 
 
     def on_key_press(self, symbol, modifiers):
