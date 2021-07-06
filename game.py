@@ -2,6 +2,7 @@ import arcade
 
 SPRITE_SCALING_PLATFORM = 0.25
 SPRITE_SCALING_PLAYER = 0.25
+SPRITE_SCALING_ENEMY = 0.15
 PLAYER_JUMP_SPEED = 9
 GRAVITY = 0.5
 SCREEN_WIDTH = 640
@@ -9,6 +10,7 @@ SCREEN_HEIGHT = 640
 PLAYER_MOVEMENT_SPEED = 5
 RIGHT_FACING = 0
 LEFT_FACING = 1
+ENEMY_SPEED = 2.5
 
 def load_texture_pair(filename):
     
@@ -34,7 +36,33 @@ class Character(arcade.Sprite):
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
-        self.texture = self.idle_texture_pair[self.character_face_direction]
+        self.texture = self.idle_texture_pair[self.character_face_direction] 
+
+class Enemy(arcade.Sprite):
+    def __init__(self, x, y):
+
+        super().__init__("Enemy.png", SPRITE_SCALING_ENEMY)
+        self.center_x = x
+        self.center_y = y
+        self.change_x = ENEMY_SPEED
+        self.start_x = x
+        self.change_y = ENEMY_SPEED
+        self.start_y = y
+        self.patrol = 50
+
+    def update(self):
+        self.center_x += self.change_x
+        if self.center_x > self.start_x + self.patrol:
+            self.change_x = -ENEMY_SPEED
+        elif self.center_x < self.start_x - self.patrol:
+            self.change_x = ENEMY_SPEED
+        
+        
+    # def on_draw(self):
+    #     pass
+
+
+
 
 class MyGame(arcade.Window):
 
@@ -45,6 +73,7 @@ class MyGame(arcade.Window):
         self.physics_engine = None
         self.player_sprite = None
         self.wall_list = None
+        self.enemy_sprite = None
 
         self.set_mouse_visible(True)
 
@@ -54,6 +83,7 @@ class MyGame(arcade.Window):
 
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
+        self.enemy_list = arcade.SpriteList()
 
         wall = arcade.Sprite("New Piskel (2).png", SPRITE_SCALING_PLATFORM)
         wall.center_x = 300
@@ -65,12 +95,15 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = SCREEN_HEIGHT/2
         self.player_list.append(self.player_sprite)
     
+        enemy = Enemy(200, 300)
+        self.enemy_list.append(enemy)
 
         self.background = arcade.load_texture("Background.png")
 
-        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
-                                                             self.wall_list,
-                                                             GRAVITY)
+        self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, GRAVITY)
+
+        # TODO Add enemies to list
+        # When you start using TMX files, you will have them placed on the map in tiles and load them here:
 
             
 
@@ -83,11 +116,13 @@ class MyGame(arcade.Window):
     
         self.player_list.draw()
         self.wall_list.draw()
+        self.enemy_list.draw()
 
     def update(self, delta_time):
 
         self.physics_engine.update()
         self.player_sprite.update()
+        self.enemy_list.update()
 
         if self.player_sprite.center_x < SPRITE_SCALING_PLAYER:
             self.player_sprite.center_x = SPRITE_SCALING_PLAYER
@@ -102,6 +137,12 @@ class MyGame(arcade.Window):
             self.player_sprite.center_y = SCREEN_HEIGHT - SPRITE_SCALING_PLAYER
 
         self.player_sprite.update_animation(delta_time)
+
+        enemy_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.enemy_list)
+        if enemy_hit_list:
+            # figgure oput if player has jumped on enemy 
+            if self.player_sprite.center_y + SPRITE_SCALING_PLAYER/2 >= self.enemy_sprite.center_y + SPRITE_SCALING_ENEMY/2
+                
 
 
 
