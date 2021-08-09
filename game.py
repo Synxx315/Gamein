@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 640
 PLAYER_MOVEMENT_SPEED = 3.5
 RIGHT_FACING = 0
 LEFT_FACING = 1
-ENEMY_SPEED = 2.5
+ENEMY_SPEED = 3.5
 PLAYER_FRAMES = 4
 PLAYER_FRAMES_PER_TEXTURE = 4
 TILE_SCALING = 1.75
@@ -69,9 +69,9 @@ class Enemy(arcade.Sprite):
         self.center_y = y
         self.change_x = ENEMY_SPEED
         self.start_x = x
-        self.change_y = ENEMY_SPEED
+        # self.change_y = ENEMY_SPEED
         self.start_y = y
-        self.patrol = 150
+        self.patrol = 500
 
     def update(self):
         self.center_x += self.change_x
@@ -79,6 +79,8 @@ class Enemy(arcade.Sprite):
             self.change_x = -ENEMY_SPEED
         elif self.center_x < self.start_x - self.patrol:
             self.change_x = ENEMY_SPEED
+        self.change_y -= GRAVITY
+        self.center_y += self.change_y
         
         
     # def on_draw(self):
@@ -130,7 +132,7 @@ class MyGame(arcade.Window):
         self.background = arcade.load_texture("Background.png")
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, GRAVITY)
-
+        
         # TODO Add enemies to list
         # When you start using TMX files, you will have them placed on the map in tiles and load them here:
 
