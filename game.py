@@ -1,4 +1,5 @@
 import arcade
+import random
 
 SPRITE_SCALING_PLATFORM = 0.25
 SPRITE_SCALING_PLAYER = 0.25
@@ -71,17 +72,29 @@ class Enemy(arcade.Sprite):
         self.start_x = x
         # self.change_y = ENEMY_SPEED
         self.start_y = y
-        self.patrol = 500
+        self.patrol = 300
 
-    def update(self):
-        self.center_x += self.change_x
+    # def update(self):
+    #     self.center_x += self.change_x
+    #     if self.center_x > self.start_x + self.patrol:
+    #         self.change_x = -ENEMY_SPEED
+    #     elif self.center_x < self.start_x - self.patrol:
+    #         self.change_x = ENEMY_SPEED
+    #     self.change_y -= GRAVITY
+    #     self.center_y += self.change_y
+        
+    def on_update(self, delta_time):
+        self.update()
         if self.center_x > self.start_x + self.patrol:
             self.change_x = -ENEMY_SPEED
         elif self.center_x < self.start_x - self.patrol:
             self.change_x = ENEMY_SPEED
-        self.change_y -= GRAVITY
-        self.center_y += self.change_y
         
+        jump_chance = random.random()
+        if jump_chance > 0.99:
+            self.change_y = PLAYER_JUMP_SPEED/2
+
+
         
     # def on_draw(self):
     #     pass
@@ -108,8 +121,8 @@ class MyGame(arcade.Window):
         self.enemy_list = arcade.SpriteList()
 
         self.player_sprite = Character()
-        self.player_sprite.center_x = 550
-        self.player_sprite.center_y = 698
+        self.player_sprite.center_x = 4777
+        self.player_sprite.center_y = 440
         self.player_list.append(self.player_sprite)
 
         
@@ -126,12 +139,16 @@ class MyGame(arcade.Window):
                                                      scaling=TILE_SCALING,
                                                      use_spatial_hash=True)
 
-        enemy = Enemy(2040, 1032)
+        enemy = Enemy(4660, 811)
         self.enemy_list.append(enemy)
 
         self.background = arcade.load_texture("Background.png")
-
+        self.engines = []
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, GRAVITY)
+        self.engines.append(self.physics_engine)
+        for e in self.enemy_list:
+            engine = arcade.PhysicsEnginePlatformer(e, self.wall_list, GRAVITY)
+            self.engines.append(engine)
         
         # TODO Add enemies to list
         # When you start using TMX files, you will have them placed on the map in tiles and load them here:
@@ -154,9 +171,12 @@ class MyGame(arcade.Window):
     def update(self, delta_time):
 
         self.set_viewport(self.player_sprite.center_x - SCREEN_WIDTH/2, self.player_sprite.center_x + SCREEN_WIDTH/2, self.player_sprite.center_y - SCREEN_HEIGHT/2, self.player_sprite.center_y + SCREEN_HEIGHT/2)
-        self.physics_engine.update()
+        for e in self.engines:
+            e.update()
+        #  self.physics_engine.update()
         self.player_sprite.update()
-        self.enemy_list.update()
+        self.enemy_list.on_update()
+
 
 
 
@@ -171,11 +191,13 @@ class MyGame(arcade.Window):
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
                 else:
                     self.setup()
-
+                    
         for enemy in self.enemy_list:
             
             if len(arcade.check_for_collision_with_list(enemy, self.wall_list)) > 0:
                 enemy.change_x *= -1
+
+            
 
     def on_mouse_press(self, x, y, button, modifiers):
         map_mouse_x = self.get_viewport()[0] + x
