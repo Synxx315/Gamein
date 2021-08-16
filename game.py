@@ -90,9 +90,8 @@ class Enemy(arcade.Sprite):
         elif self.center_x < self.start_x - self.patrol:
             self.change_x = ENEMY_SPEED
         
-        jump_chance = random.random()
-        if jump_chance > 0.99:
-            self.change_y = PLAYER_JUMP_SPEED/2
+
+
 
 
         
@@ -122,7 +121,7 @@ class MyGame(arcade.Window):
 
         self.player_sprite = Character()
         self.player_sprite.center_x = 4777
-        self.player_sprite.center_y = 440
+        self.player_sprite.center_y = 438
         self.player_list.append(self.player_sprite)
 
         
@@ -140,6 +139,10 @@ class MyGame(arcade.Window):
                                                      use_spatial_hash=True)
 
         enemy = Enemy(4660, 811)
+        enemy = Enemy(2029, 1034)
+
+
+
         self.enemy_list.append(enemy)
 
         self.background = arcade.load_texture("Background.png")
