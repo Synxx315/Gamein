@@ -8,7 +8,7 @@ PLAYER_JUMP_SPEED = 11
 GRAVITY = 0.5
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 640
-PLAYER_MOVEMENT_SPEED = 3.5
+PLAYER_MOVEMENT_SPEED = 15
 RIGHT_FACING = 0
 LEFT_FACING = 1
 ENEMY_SPEED = 3.5
@@ -74,29 +74,21 @@ class Enemy(arcade.Sprite):
         self.start_y = y
         self.patrol = 300
 
-    # def update(self):
-    #     self.center_x += self.change_x
-    #     if self.center_x > self.start_x + self.patrol:
-    #         self.change_x = -ENEMY_SPEED
-    #     elif self.center_x < self.start_x - self.patrol:
-    #         self.change_x = ENEMY_SPEED
-    #     self.change_y -= GRAVITY
-    #     self.center_y += self.change_y
         
     def on_update(self, delta_time):
         self.update()
         if self.center_x > self.start_x + self.patrol:
-            self.change_x = -ENEMY_SPEED
+            self.turn()
         elif self.center_x < self.start_x - self.patrol:
-            self.change_x = ENEMY_SPEED
-        
+            self.turn()
 
+    def turn(self):
+        self.change_x = -self.change_x
 
+class Win(arcade.Sprite):
+    def __init__(self):
 
-
-        
-    # def on_draw(self):
-    #     pass
+        super().__init__("New Piskel (2).png",)
 
 class MyGame(arcade.Window):
 
@@ -108,29 +100,30 @@ class MyGame(arcade.Window):
         self.player_sprite = None
         self.wall_list = None
         self.enemy_sprite = None
+        self.win_list = None
 
         self.set_mouse_visible(True)
 
         self.background = None
+        self.level = 1
 
-    def setup(self):
+    def setup(self, level):
 
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
+        self.win_list = arcade.SpriteList()
 
         self.player_sprite = Character()
-        self.player_sprite.center_x = 4777
-        self.player_sprite.center_y = 438
+        self.player_sprite.center_x = 777 
+        self.player_sprite.center_y = 2484
         self.player_list.append(self.player_sprite)
-
-        
 
         map_name = ":resources:tmx_maps/map.tmx"
 
         platforms_layer_name = 'Ground'
 
-        my_map = arcade.tilemap.read_tmx("Assets\Maps\Gangsta map.tmx")
+        my_map = arcade.tilemap.read_tmx(f"Assets\Maps\level{level}.tmx")
 
 
         self.wall_list = arcade.tilemap.process_layer(map_object=my_map,
@@ -138,13 +131,19 @@ class MyGame(arcade.Window):
                                                      scaling=TILE_SCALING,
                                                      use_spatial_hash=True)
 
-        enemy = Enemy(4660, 811)
-        enemy = Enemy(2029, 1034)
-
-
-
+        enemy = Enemy(2042, 2818)
+        self.enemy_list.append(enemy)
+        enemy = Enemy(3749, 2259)
+        self.enemy_list.append(enemy)
+        enemy = Enemy(4597, 2201)
+        self.enemy_list.append(enemy)
+        enemy = Enemy(5010, 2201)
+        self.enemy_list.append(enemy)
+        enemy = Enemy(7429, 2482)
         self.enemy_list.append(enemy)
 
+        self.title = arcade.load_texture("TITLE.png")
+        self.foreground = arcade.load_texture("BLACK.png")
         self.background = arcade.load_texture("Background.png")
         self.engines = []
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, GRAVITY)
@@ -156,19 +155,22 @@ class MyGame(arcade.Window):
         # TODO Add enemies to list
         # When you start using TMX files, you will have them placed on the map in tiles and load them here:
 
-            
-
     def on_draw(self):
-        arcade.start_render()
+        arcade.start_render()    
 
         arcade.draw_lrwh_rectangle_textured(self.get_viewport()[0], self.get_viewport()[2],
                                             SCREEN_WIDTH, SCREEN_HEIGHT,
                                             self.background)
-    
+
         self.player_list.draw()
         self.wall_list.draw()
         self.enemy_list.draw()
+        
+        arcade.draw_lrwh_rectangle_textured(self.get_viewport()[0], self.get_viewport()[2],
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.foreground)
 
+        arcade.draw_lrwh_rectangle_textured(582, 2652, 500, 100, self.title)
 
 
     def update(self, delta_time):
@@ -193,12 +195,17 @@ class MyGame(arcade.Window):
                     enemy.kill()
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
                 else:
-                    self.setup()
+                    self.setup(self.level)
                     
         for enemy in self.enemy_list:
             
             if len(arcade.check_for_collision_with_list(enemy, self.wall_list)) > 0:
                 enemy.change_x *= -1
+
+            touching = arcade.check_for_collision_with_list(enemy, self.wall_list)
+            if touching:
+                enemy.turn()
+
 
             
 
@@ -216,6 +223,10 @@ class MyGame(arcade.Window):
             # if self.physics_engine.can_jump():
             self.player_sprite.change_y = PLAYER_JUMP_SPEED
 
+        if self.player_sprite.center_x >= win:
+            self.level += 1
+            self.setup(self.level)
+
     def on_key_release(self, symbol, modifiers):
         
         if symbol == arcade.key.LEFT:
@@ -227,7 +238,7 @@ class MyGame(arcade.Window):
 
 def main():
     window = MyGame()
-    window.setup()
+    window.setup(1)
     arcade.run()
 
 if __name__ == "__main__":
