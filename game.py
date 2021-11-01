@@ -151,6 +151,9 @@ class MyGame(arcade.Window):
         for e in self.enemy_list:
             engine = arcade.PhysicsEnginePlatformer(e, self.wall_list, GRAVITY)
             self.engines.append(engine)
+
+        win = Win()
+        self.win_list.append(win)
         
         # TODO Add enemies to list
         # When you start using TMX files, you will have them placed on the map in tiles and load them here:
@@ -205,6 +208,13 @@ class MyGame(arcade.Window):
             touching = arcade.check_for_collision_with_list(enemy, self.wall_list)
             if touching:
                 enemy.turn()
+    
+        win_hit_list = arcade.check_for_collision_with_list(self.player_sprite, win_list)
+        for win in win_hit_list:
+
+            if win_hit_list:
+                
+            
 
 
             
