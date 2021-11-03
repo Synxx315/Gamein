@@ -86,9 +86,12 @@ class Enemy(arcade.Sprite):
         self.change_x = -self.change_x
 
 class Win(arcade.Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
 
-        super().__init__("New Piskel (2).png",)
+        super().__init__("New Piskel (2).png", 0.3)
+        self.center_x = x
+        self.center_y = y
+
 
 class MyGame(arcade.Window):
 
@@ -152,7 +155,7 @@ class MyGame(arcade.Window):
             engine = arcade.PhysicsEnginePlatformer(e, self.wall_list, GRAVITY)
             self.engines.append(engine)
 
-        win = Win()
+        win = Win(7848, 2512)
         self.win_list.append(win)
         
         # TODO Add enemies to list
@@ -168,6 +171,7 @@ class MyGame(arcade.Window):
         self.player_list.draw()
         self.wall_list.draw()
         self.enemy_list.draw()
+        self.win_list.draw()
         
         arcade.draw_lrwh_rectangle_textured(self.get_viewport()[0], self.get_viewport()[2],
                                             SCREEN_WIDTH, SCREEN_HEIGHT,
@@ -209,12 +213,21 @@ class MyGame(arcade.Window):
             if touching:
                 enemy.turn()
     
-        win_hit_list = arcade.check_for_collision_with_list(self.player_sprite, win_list)
+        win_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.win_list)
         for win in win_hit_list:
 
             if win_hit_list:
-                
+                self.level += 1
+                self.setup(self.level)
+                if self.level == 2:
+                    self.win_list[0].center_x = 8295
+                    self.win_list[0].center_y = 4752
+                    self.player_sprite.center_x = 777
+                    self.player_sprite.center_y = 3823
+                if self.level == 3:
+                    ...
             
+
 
 
             
@@ -233,9 +246,9 @@ class MyGame(arcade.Window):
             # if self.physics_engine.can_jump():
             self.player_sprite.change_y = PLAYER_JUMP_SPEED
 
-        if self.player_sprite.center_x >= win:
-            self.level += 1
-            self.setup(self.level)
+        # if self.player_sprite.center_x >= 7808:
+        #     self.level += 1
+        #     self.setup(self.level)
 
     def on_key_release(self, symbol, modifiers):
         
