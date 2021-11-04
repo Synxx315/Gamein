@@ -134,16 +134,31 @@ class MyGame(arcade.Window):
                                                      scaling=TILE_SCALING,
                                                      use_spatial_hash=True)
 
-        enemy = Enemy(2042, 2818)
-        self.enemy_list.append(enemy)
-        enemy = Enemy(3749, 2259)
-        self.enemy_list.append(enemy)
-        enemy = Enemy(4597, 2201)
-        self.enemy_list.append(enemy)
-        enemy = Enemy(5010, 2201)
-        self.enemy_list.append(enemy)
-        enemy = Enemy(7429, 2482)
-        self.enemy_list.append(enemy)
+        if self.level == 1:
+            enemy = Enemy(2042, 2818)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(3749, 2259)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(4597, 2201)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(5010, 2201)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(7429, 2482)
+            self.enemy_list.append(enemy)
+ 
+        if self.level == 2:
+            enemy = Enemy(1530, 3830)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(2574, 4096)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(3120, 4096)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(5348, 4777)
+            self.enemy_list.append(enemy)
+            enemy = Enemy(7048, 3993)
+            self.enemy_list.append(enemy)                    
+            self.player_sprite.center_x = 777
+            self.player_sprite.center_y = 3823
 
         self.title = arcade.load_texture("TITLE.png")
         self.foreground = arcade.load_texture("BLACK.png")
@@ -220,7 +235,7 @@ class MyGame(arcade.Window):
                 self.level += 1
                 self.setup(self.level)
                 if self.level == 2:
-                    self.win_list[0].center_x = 8295
+                    self.win_list[0].center_x = 8296
                     self.win_list[0].center_y = 4752
                     self.player_sprite.center_x = 777
                     self.player_sprite.center_y = 3823
