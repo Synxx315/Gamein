@@ -103,6 +103,7 @@ class MyGame(arcade.Window):
         self.player_sprite = None
         self.wall_list = None
         self.enemy_sprite = None
+        self.win = None
         self.win_list = None
 
         self.set_mouse_visible(True)
@@ -145,6 +146,8 @@ class MyGame(arcade.Window):
             self.enemy_list.append(enemy)
             enemy = Enemy(7429, 2482)
             self.enemy_list.append(enemy)
+            self.win = Win(7848, 2512)
+            self.win_list.append(self.win)
  
         if self.level == 2:
             enemy = Enemy(1530, 3830)
@@ -159,6 +162,10 @@ class MyGame(arcade.Window):
             self.enemy_list.append(enemy)                    
             self.player_sprite.center_x = 777
             self.player_sprite.center_y = 3823
+            self.win = Win(8296, 4752)
+            self.win_list = arcade.SpriteList()
+            self.win_list.append(self.win)
+
 
         self.title = arcade.load_texture("TITLE.png")
         self.foreground = arcade.load_texture("BLACK.png")
@@ -170,8 +177,7 @@ class MyGame(arcade.Window):
             engine = arcade.PhysicsEnginePlatformer(e, self.wall_list, GRAVITY)
             self.engines.append(engine)
 
-        win = Win(7848, 2512)
-        self.win_list.append(win)
+
         
         # TODO Add enemies to list
         # When you start using TMX files, you will have them placed on the map in tiles and load them here:
@@ -229,18 +235,11 @@ class MyGame(arcade.Window):
                 enemy.turn()
     
         win_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.win_list)
-        for win in win_hit_list:
 
-            if win_hit_list:
-                self.level += 1
-                self.setup(self.level)
-                if self.level == 2:
-                    self.win_list[0].center_x = 8296
-                    self.win_list[0].center_y = 4752
-                    self.player_sprite.center_x = 777
-                    self.player_sprite.center_y = 3823
-                if self.level == 3:
-                    ...
+        if win_hit_list:
+            self.level += 1
+            self.setup(self.level)
+
             
 
 
